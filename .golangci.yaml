@@ -1,0 +1,23 @@
+linters:
+  # Additionally enabled linters.
+  enable:
+    - dogsled
+    - dupl
+    - exhaustive
+    - exportloopref
+    - goconst
+    - godot
+    - gofumpt
+    - goimports
+    - gomnd
+    - importas
+    - revive
+    - unconvert
+    - unparam
+    - whitespace
+  fast: false
+linters-settings:
+  exhaustive:
+    default-signifies-exhaustive: true
+  goimports:
+    local-prefixes: github.com/mpreu/cosi-driver-garage
