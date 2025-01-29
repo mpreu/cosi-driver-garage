@@ -3,6 +3,7 @@ module github.com/mpreu/cosi-driver-garage
 go 1.23
 
 require (
+	github.com/deepmap/oapi-codegen v1.16.3
 	github.com/oapi-codegen/oapi-codegen/v2 v2.4.1
 	github.com/oapi-codegen/runtime v1.1.1
 	sigs.k8s.io/container-object-storage-interface-provisioner-sidecar v0.1.0
