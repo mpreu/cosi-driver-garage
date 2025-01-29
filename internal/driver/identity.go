@@ -10,9 +10,14 @@ import (
 var _ cosi.IdentityServer = &identityServer{}
 
 // identityServer implements cosi.IdentityServer.
-type identityServer struct{}
+type identityServer struct {
+	cosi.UnimplementedIdentityServer
+	driverName string
+}
 
 // DriverGetInfo implements cosi.IdentityServer.
 func (i *identityServer) DriverGetInfo(context.Context, *cosi.DriverGetInfoRequest) (*cosi.DriverGetInfoResponse, error) {
-	panic("unimplemented")
+	return &cosi.DriverGetInfoResponse{
+		Name: i.driverName,
+	}, nil
 }
