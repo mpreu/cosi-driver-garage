@@ -18,6 +18,7 @@ import (
 )
 
 func main() {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	cfg := config.Config{
 		DriverName:          getEnv("COSI_DRIVER_NAME", "garage.objectstorage.k8s.io"),
 		COSIEndpoint:        getEnv("COSI_ENDPOINT", "unix:///var/lib/cosi/cosi.sock"),
@@ -25,7 +26,10 @@ func main() {
 		GarageAdminToken:    getEnv("GARAGE_ADMIN_TOKEN", ""),
 	}
 
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	if err := cfg.Validate(); err != nil {
+		logger.Error("Error validating config", "error", err)
+		os.Exit(1)
+	}
 
 	if err := run(context.Background(), &cfg); err != nil {
 		logger.Error("Error running the driver", "error", err)
@@ -56,7 +60,7 @@ func run(ctx context.Context, cfg *config.Config) error {
 	}
 
 	// Run COSI server.
-	is, ps := driver.New(c)
+	is, ps := driver.New(cfg.DriverName, c)
 
 	server, err := provisioner.NewDefaultCOSIProvisionerServer(
 		cfg.COSIEndpoint,

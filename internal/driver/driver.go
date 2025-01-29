@@ -8,8 +8,11 @@ import (
 
 // New returns implementations for the COSI.IdentityServer and
 // cosi.ProvisionerServer interfaces.
-func New(c client.ClientWithResponsesInterface) (cosi.IdentityServer, cosi.ProvisionerServer) {
-	is := &identityServer{}
+func New(driverName string, c client.ClientWithResponsesInterface) (cosi.IdentityServer, cosi.ProvisionerServer) {
+	is := &identityServer{
+		driverName: driverName,
+	}
+
 	ps := &provisionerServer{
 		client: c,
 	}
