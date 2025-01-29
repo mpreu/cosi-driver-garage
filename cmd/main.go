@@ -3,20 +3,26 @@ package cmd
 import (
 	"context"
 	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"sigs.k8s.io/container-object-storage-interface-provisioner-sidecar/pkg/provisioner"
 
+	"github.com/deepmap/oapi-codegen/pkg/securityprovider"
+
+	"github.com/mpreu/cosi-driver-garage/internal/client"
 	"github.com/mpreu/cosi-driver-garage/internal/config"
 	"github.com/mpreu/cosi-driver-garage/internal/driver"
 )
 
 func main() {
 	cfg := config.Config{
-		DriverName:   getEnv("COSI_DRIVER_NAME", "garage.objectstorage.k8s.io"),
-		COSIEndpoint: getEnv("COSI_ENDPOINT", "unix:///var/lib/cosi/cosi.sock"),
+		DriverName:          getEnv("COSI_DRIVER_NAME", "garage.objectstorage.k8s.io"),
+		COSIEndpoint:        getEnv("COSI_ENDPOINT", "unix:///var/lib/cosi/cosi.sock"),
+		GarageAdminEndpoint: getEnv("GARAGE_ADMIN_ENDPOINT", ""),
+		GarageAdminToken:    getEnv("GARAGE_ADMIN_TOKEN", ""),
 	}
 
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
@@ -35,7 +41,22 @@ func run(ctx context.Context, cfg *config.Config) error {
 	)
 	defer stop()
 
-	is, ps := driver.New()
+	// Setup Garage HTTP client.
+	tokenProvider, err := securityprovider.NewSecurityProviderBearerToken(cfg.GarageAdminToken)
+	if err != nil {
+		return err
+	}
+
+	c, err := client.NewClientWithResponses(cfg.GarageAdminEndpoint,
+		client.WithHTTPClient(&http.Client{}),
+		client.WithRequestEditorFn(tokenProvider.Intercept),
+	)
+	if err != nil {
+		return err
+	}
+
+	// Run COSI server.
+	is, ps := driver.New(c)
 
 	server, err := provisioner.NewDefaultCOSIProvisionerServer(
 		cfg.COSIEndpoint,

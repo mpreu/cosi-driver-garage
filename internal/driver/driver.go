@@ -1,12 +1,18 @@
 package driver
 
-import cosi "sigs.k8s.io/container-object-storage-interface-spec"
+import (
+	cosi "sigs.k8s.io/container-object-storage-interface-spec"
+
+	"github.com/mpreu/cosi-driver-garage/internal/client"
+)
 
 // New returns implementations for the COSI.IdentityServer and
 // cosi.ProvisionerServer interfaces.
-func New() (cosi.IdentityServer, cosi.ProvisionerServer) {
+func New(c client.ClientWithResponsesInterface) (cosi.IdentityServer, cosi.ProvisionerServer) {
 	is := &identityServer{}
-	ps := &provisionerServer{}
+	ps := &provisionerServer{
+		client: c,
+	}
 
 	return is, ps
 }

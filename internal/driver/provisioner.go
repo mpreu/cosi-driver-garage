@@ -4,13 +4,17 @@ import (
 	"context"
 
 	cosi "sigs.k8s.io/container-object-storage-interface-spec"
+
+	"github.com/mpreu/cosi-driver-garage/internal/client"
 )
 
 // Interface assert.
 var _ cosi.ProvisionerServer = &provisionerServer{}
 
 // provisionerServer implements cosi.ProvisionerServer.
-type provisionerServer struct{}
+type provisionerServer struct {
+	client client.ClientWithResponsesInterface
+}
 
 // DriverCreateBucket implements cosi.ProvisionerServer.
 func (p *provisionerServer) DriverCreateBucket(context.Context, *cosi.DriverCreateBucketRequest) (*cosi.DriverCreateBucketResponse, error) {
