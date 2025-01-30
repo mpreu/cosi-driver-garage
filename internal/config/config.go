@@ -4,12 +4,18 @@ import "errors"
 
 // Config options for the driver.
 type Config struct {
-	DriverName   string
 	COSIEndpoint string
-	// GarageAdminEndpoint is the Garage Admin API endpoint.
-	GarageAdminEndpoint string
-	// GarageAdminToken is the Garage Admin API token.
-	GarageAdminToken string
+	DriverName   string
+	Garage       *Garage
+}
+
+// Garage settings.
+type Garage struct {
+	Endpoint           string
+	Region             string
+	AdminEndpoint      string
+	AdminToken         string
+	InsecureSkipVerify bool
 }
 
 // Validate validates a configuration.
@@ -22,11 +28,23 @@ func (c *Config) Validate() error {
 		return errors.New("COSI endpoint cannot be empty")
 	}
 
-	if c.GarageAdminEndpoint == "" {
+	if c.Garage == nil {
+		return errors.New("Garage settings cannot be nil")
+	}
+
+	if c.Garage.Endpoint == "" {
+		return errors.New("Garage endpoint cannot be empty")
+	}
+
+	if c.Garage.Region == "" {
+		return errors.New("Garage region cannot be empty")
+	}
+
+	if c.Garage.AdminEndpoint == "" {
 		return errors.New("Garage admin endpoint cannot be empty")
 	}
 
-	if c.GarageAdminToken == "" {
+	if c.Garage.AdminToken == "" {
 		return errors.New("Garage admin token cannot be empty")
 	}
 
