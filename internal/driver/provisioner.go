@@ -217,7 +217,6 @@ func (p *provisionerServer) hasBucket(ctx context.Context, name string) (*string
 
 	var id *string
 	for _, l := range *list.JSON200 {
-		l := l
 		if l.GlobalAliases != nil {
 			if slices.Contains(*l.GlobalAliases, name) {
 				id = &l.Id
