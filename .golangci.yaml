@@ -1,16 +1,16 @@
 linters:
   # Additionally enabled linters.
   enable:
+    - copyloopvar
     - dogsled
     - dupl
     - exhaustive
-    - exportloopref
     - goconst
     - godot
     - gofumpt
     - goimports
-    - gomnd
     - importas
+    - mnd
     - revive
     - unconvert
     - unparam

@@ -1,0 +1,104 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "**.go"
+      - go.mod
+      - go.sum
+      - Containerfile
+    tags:
+      - v*
+  pull_request:
+    paths:
+      - "**.go"
+      - go.mod
+      - go.sum
+      - Containerfile
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: cosi-driver-garage
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  REGISTRY_USER: ${{ github.actor }}
+  REGISTRY_PASSWORD: ${{ github.token }}
+
+jobs:
+  test:
+    name: Run go tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: go test ./...
+
+  version:
+    name: Generate SemVer
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout code with git history
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Generate basic SemVer inputs
+        id: semver
+        uses: PaulHatch/semantic-version@v5.0.3
+        with:
+          tag_prefix: v
+          version_format: "${major}.${minor}.${patch}"
+
+      - name: Generate final SemVer
+        id: version
+        run: |
+          semver=${{ steps.semver.outputs.version }}
+          timestamp=$(git log -1 --date=format:%Y%m%d%H%M%S --format=%cd)
+          sha=$(git rev-parse --short HEAD)
+          version=${semver}
+
+          if [ "${{ startsWith(github.ref, 'refs/tags/v') }}" != "true" ]; then
+            version=${semver}-${timestamp}-${sha}
+          fi
+
+          echo "version=${version}" >> $GITHUB_OUTPUT
+
+  container:
+    name: Build container image
+    runs-on: ubuntu-latest
+    needs: [test, version]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build image
+        uses: redhat-actions/buildah-build@v2
+        id: build
+        with:
+          image: ${{ env.IMAGE_NAME }}
+          tags: ${{ needs.version.outputs.version }}
+          extra-args: |
+            --target=runtime
+          containerfiles: |
+            ./Containerfile
+
+      - name: Push to GHCR
+        if: github.event_name != 'pull_request'
+        uses: redhat-actions/push-to-registry@v2
+        id: push
+        with:
+          image: ${{ steps.build.outputs.image }}
+          tags: ${{ steps.build.outputs.tags }}
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+
+      - name: Print push output
+        if: github.event_name != 'pull_request'
+        run: echo "${{ toJSON(steps.push.outputs) }}"
