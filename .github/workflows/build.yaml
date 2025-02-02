@@ -86,6 +86,8 @@ jobs:
         with:
           image: ${{ env.IMAGE_NAME }}
           tags: ${{ needs.version.outputs.version }}
+          build-args: |
+            VERSION=${{ needs.version.outputs.version }}
           extra-args: |
             --target=runtime
           containerfiles: |
