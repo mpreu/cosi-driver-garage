@@ -10,7 +10,7 @@ resources:
 images:
   - name: driver
     newName: github.com/mpreu/cosi-driver-garage
-    newTag: v0.1.0
+    newTag: 0.1.0
 
   - name: sidecar
     newName: gcr.io/k8s-staging-sig-storage/objectstorage-sidecar/objectstorage-sidecar
