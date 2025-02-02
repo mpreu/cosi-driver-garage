@@ -1,0 +1,49 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cosi-driver-garage
+  labels:
+    app.kubernetes.io/name: cosi-driver-garage
+rules:
+  - apiGroups:
+      # COSI resource group.
+      - objectstorage.k8s.io
+    resources:
+      # BucketClasses are managed by the COSI controller.
+      - buckets
+      - bucketclaims
+      - bucketaccesses
+      - bucketaccessclasses
+      - buckets/status
+      - bucketaccesses/status
+      - bucketclaims/status
+      - bucketaccessclasses/status
+    verbs:
+      - create
+      - get
+      - update
+      - delete
+      - list
+      - watch
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      # Leader election process by COSI provisioner sidecar.
+      - leases
+    verbs:
+      - create
+      - get
+      - update
+      - delete
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - events # Events emmited from COSI provisioner sidecar.
+      - secrets # Secrets created by COSI provisioner sidecar.
+    verbs:
+      - create
+      - get
+      - update
+      - delete

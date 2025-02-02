@@ -1,0 +1,7 @@
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: cosi-driver-garage
+  namespace: system
+  labels:
+    app.kubernetes.io/name: cosi-driver-garage
