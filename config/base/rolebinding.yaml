@@ -1,0 +1,14 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cosi-driver-garage
+  labels:
+    app.kubernetes.io/name: cosi-driver-garage
+subjects:
+  - kind: ServiceAccount
+    name: cosi-driver-garage
+    namespace: system
+roleRef:
+  kind: ClusterRole
+  name: cosi-driver-garage
+  apiGroup: rbac.authorization.k8s.io

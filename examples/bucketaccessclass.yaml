@@ -1,0 +1,13 @@
+kind: BucketAccessClass
+apiVersion: objectstorage.k8s.io/v1alpha1
+metadata:
+  name: garage
+driverName: garage.objectstorage.k8s.io
+authenticationType: Key
+# Specify additional parameters here.
+# Default values are shown below.
+#
+# parameters:
+#   owner: "false"
+#   read: "true"
+#   write: "true"
