@@ -52,6 +52,9 @@ kubectl apply -f examples/bucketclass.yaml
 kubectl apply -f examples/bucketaccessclass.yaml
 ```
 
+> A `BucketAccessClass` has to be explicitly configured with permission parameters.
+> Generated access keys have no permissions by default.
+
 Instantiate a `BucketClaim` and `BucketAccess` resource to create a bucket and corresponding secret:
 
 ```bash

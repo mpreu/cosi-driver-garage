@@ -13,6 +13,6 @@ metadata:
   name: garage-test
 spec:
   bucketClaimName: garage-test
-  bucketAccessClassName: garage
+  bucketAccessClassName: garage-rw
   credentialsSecretName: bucket-creds-garage-test
   protocol: s3
