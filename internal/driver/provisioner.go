@@ -260,11 +260,12 @@ type accessPermissions struct {
 }
 
 // permissions parses the bucket access permissions from BucketAccessClass parameters.
+// All permissions are disabled by default.
 func permissions(params map[string]string) (*accessPermissions, error) {
 	p := &accessPermissions{
 		owner: false,
-		read:  true,
-		write: true,
+		read:  false,
+		write: false,
 	}
 
 	if params == nil {
