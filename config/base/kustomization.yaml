@@ -9,7 +9,7 @@ resources:
 
 images:
   - name: driver
-    newName: ghcr.io/mpreu/cosi-driver-garage/cosi-driver-garage
+    newName: ghcr.io/mpreu/cosi-driver-garage
     newTag: 0.1.0
 
   - name: sidecar
